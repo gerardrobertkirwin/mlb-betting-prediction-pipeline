@@ -205,3 +205,47 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# ML/Data Science specific
+data/raw/*
+data/processed/*
+data/interim/*
+data/external/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/interim/.gitkeep
+!data/external/.gitkeep
+
+# Model artifacts
+models/*
+!models/.gitkeep
+*.pkl
+*.joblib
+*.h5
+*.pth
+*.onnx
+
+# MLflow
+mlruns/
+mlartifacts/
+
+# Experiment tracking
+experiments/
+runs/
+
+# Large files
+*.csv
+*.parquet
+*.feather
+*.db
+*.sqlite
+
+# API keys and secrets
+.env.local
+secrets.yaml
+credentials.json
+*.key
+
+# Reports and outputs
+reports/figures/*
+!reports/figures/.gitkeep
