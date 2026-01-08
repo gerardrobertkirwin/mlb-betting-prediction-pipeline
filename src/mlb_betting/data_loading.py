@@ -1,9 +1,13 @@
 import pandas as pd
 import numpy as np
+import json
+import os
 import requests
 import time
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+
+from src.mlb_betting.config import get_team_abbr
 
 class MLBStatsAPI:
   base_url = "https://statsapi.mlb.com/api/v1"
@@ -156,4 +160,52 @@ class BettingDataLoader:
       return pd.json_normalize(games_list, sep='_')
 
 
-def load_and_merge_data(
+def load_and_merge_data(season: int, odds_filepath: str) -> pd.DataFrame:
+  """
+  Steps:
+  1. Gathers MLB API and Betting data
+  2. Cleans data, removes duplicates and standardizes team names
+  3. Merges cleaned data
+  """
+  # 1. MLB API data
+  api = MLBStatsAPI()
+  df_mlb = api.get_season_schedule(season)
+
+  df_mlb = df_mlb.sort_values('date')
+  df_mlb = df_mlb.drop_duplicates(subset=['game_id'], keep='last')
+
+  mask_valid = (df_mlb['home_score'] > 0) | (df_mlb['away_score'] > 0) | (df_mlb['home_hits'] > 0)
+  df_mlb = df_mlb[mask_valid].copy()
+
+  # 2. Load Odds Data
+  loader = BettingDataLoader(odds_filepath)
+  df_odds = loader.load_odds(target_book='bet365')
+
+  # 3. Team name standardization
+  df_mlb['date'] = pd.to_datetime(df_mlb['date'])
+  df_odds['date'] = pd.to_datetime(df_odds['date'])
+  
+  df_mlb['home_abbr'] = df_mlb['home_team'].apply(get_team_abbr)
+  df_mlb['away_abbr'] = df_mlb['away_team'].apply(get_team_abbr)
+  
+  df_odds['home_abbr'] = df_odds['home_team_abbr']
+  df_odds['away_abbr'] = df_odds['away_team_abbr']
+
+  # 4. Merge
+  df_merged = pd.merge(
+    df_mlb,
+    df_odds,
+    how='left', 
+    left_on=['date', 'home_abbr', 'away_abbr'],
+    right_on=['date', 'home_team_abbr', 'away_team_abbr'],
+    suffixes=('', '_odds')
+  )
+  
+  # 5. Handle Doubleheaders Manually
+  condition = (
+      (df_merged['home_score'] == df_merged['home_score_odds']) &
+      (df_merged['away_score'] == df_merged['away_score_odds'])
+  ) | (df_merged['home_score_odds'].isna()) 
+  
+  df_final = df_merged[condition].copy()
+  return df_final
