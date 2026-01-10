@@ -44,3 +44,20 @@ class BayesianBettingModel:
     os.makedirs(os.path.dirname(self.model_path), exist_ok=True)
     az.to_netcdf(self.trace, self.model_path)
     print(f"Model saved to {self.model_path}")
+
+  def predict(self, df_new: pd.DataFrame, feature_cols: list) -> np.array:
+    """
+    Loads the model and generates probability predictions for new data.
+    """
+    # 1. Load Model if needed
+    if self.trace is None:
+        if not os.path.exists(self.model_path):
+            raise FileNotFoundError(f"Model not found at {self.model_path}")
+        print(f"Loading model from {self.model_path}...")
+        self.trace = az.from_netcdf(self.model_path)
+
+    
+    with bayesian_model:
+      ppc = pm.sample_posterior_predictive(trace, var_names=["y_obs"])
+
+      bayesian_probs = ppc.posterior_predictive['y_obs'].mean(dim=["chain", "draw"]).values
