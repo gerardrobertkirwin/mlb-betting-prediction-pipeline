@@ -1,3 +1,13 @@
+import sys
+import os
+from pathlib import Path
+
+TEST_DIR = Path(__file__).resolve().parent
+
+PROJECT_ROOT = TEST_DIR.parent
+
+sys.path.append(str(PROJECT_ROOT))
+
 import pandas as pd
 import numpy as np
 import pytest
