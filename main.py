@@ -63,7 +63,7 @@ def run_pipeline():
     df_train['my_prob'] = probs
     
     # Simulate Betting
-    results = simulate_betting(df_train, prob_col='my_prob', threshold=0.05)
+    results = simulate_betting(df_train, threshold=0.05)
     
     print(f"\n💰 RESULTS 💰")
     print(f"Bets Placed: {results['total_bets']}")
