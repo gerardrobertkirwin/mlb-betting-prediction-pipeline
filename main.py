@@ -30,7 +30,7 @@ def run_pipeline():
     
     df_long = features.create_team_centric_df(df_raw)
     
-    df_rolling = features.calculate_rolling_features(df_long, window=10)
+    df_rolling = features.calculate_rolling_features(df_long, window_size=10)
     
     df_adv = features.calculate_advanced_features(df_rolling)
     
