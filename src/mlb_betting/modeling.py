@@ -24,11 +24,11 @@ class BayesianBettingModel:
     X = df_train[feature_cols].values
     y = df_train[target_col].values
     
-    # 2. Manual Cleaning Pipeline (Impute -> Scale)
+    # 2. Imputing and scaling
     X_imputed = self.imputer.fit_transform(X)
     X_scaled = self.scaler.fit_transform(X_imputed)
 
-    # 2. Define the Model Context
+    # 2. Define the Model variables
     with pm.Model() as bayesian_model:
         alpha = pm.Normal("alpha", mu=0, sigma=1)
         betas = pm.Normal("betas", mu=0, sigma=1, shape=X_scaled.shape[1])
@@ -74,8 +74,7 @@ class BayesianBettingModel:
 
         ppc = pm.sample_posterior_predictive(self.trace, var_names=["y_obs"], extend_inferencedata=True)
             
-        # 4. Extract Mean Probability
-        # This line must be indented exactly 8 spaces (same as 'with pm.Model' above)
+    # Extract Mean Probability
     post_pred = self.trace.posterior_predictive["y_obs"]
     mean_probs = post_pred.mean(dim=["chain", "draw"]).values
         
@@ -121,7 +120,6 @@ def simulate_betting(df, threshold=0.05, stake=100):
       
     sim['pnl'] = sim.apply(calculate_pnl, axis=1)
     
-    # METRICS
     total_bets = sim['bet_placed'].sum()
     total_profit = sim['pnl'].sum()
     roi = (total_profit / (total_bets * stake)) * 100 if total_bets > 0 else 0
