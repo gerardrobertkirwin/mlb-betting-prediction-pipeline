@@ -72,10 +72,14 @@ class BayesianBettingModel:
     
         y_obs = pm.Bernoulli("y_obs", p=theta, shape=len(X_scaled))
 
-        ppc = pm.sample_posterior_predictive(self.trace, var_names=["y_obs"])
-       
-    bayesian_probs = ppc.posterior_predictive['y_obs'].mean(dim=["chain", "draw"]).values
-
+        ppc = ppm.sample_posterior_predictive(self.trace, var_names=["y_obs"], extend_inferencedata=True)
+            
+        # 4. Extract Mean Probability
+        # This line must be indented exactly 8 spaces (same as 'with pm.Model' above)
+    post_pred = self.trace.posterior_predictive["y_obs"]
+    mean_probs = post_pred.mean(dim=["chain", "draw"]).values
+        
+    return mean_probs
 
 def simulate_betting(df, threshold=0.05, stake=100):
     """
