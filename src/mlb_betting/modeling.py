@@ -61,6 +61,8 @@ class BayesianBettingModel:
     X_imputed = self.imputer.transform(X)
     X_scaled = self.scaler.transform(X_imputed)
 
+    print("Generating Probabilities...")
+
     with pm.Model() as model:
         alpha = pm.Normal("alpha", mu=0, sigma=1)
         betas = pm.Normal("betas", mu=0, sigma=1, shape=X_scaled.shape[1])
@@ -72,7 +74,7 @@ class BayesianBettingModel:
 
         ppc = pm.sample_posterior_predictive(self.trace, var_names=["y_obs"])
     
-      bayesian_probs = ppc.posterior_predictive['y_obs'].mean(dim=["chain", "draw"]).values
+    bayesian_probs = ppc.posterior_predictive['y_obs'].mean(dim=["chain", "draw"]).values
 
 
 def simulate_betting(df, threshold=0.05, stake=100):
