@@ -124,7 +124,7 @@ def finalize_training_data(df: pd.DataFrame) -> pd.DataFrame:
     """
     df_train = df.copy()
 
-    # 1. Drop the Warm-Up Period
+    # 1. Drop the early season NaNs
     df_train = df_train.dropna(subset=['rolling_10_runs_scored', 'log5_prob'])
     
     # 2. Encode Team Names for ML process
@@ -147,7 +147,6 @@ def finalize_training_data(df: pd.DataFrame) -> pd.DataFrame:
         'moneyline_closing' # We don't train on this, but we need it for the betting simulation later
     ]
 
-    # The Target
     target = 'result' # 1 = Win, 0 = Loss
 
     return df_train[features + [target, 'date', 'team', 'opponent']]
