@@ -85,6 +85,9 @@ class BettingDataLoader:
     self.filepath = filepath
 
   def load_odds(self, target_book: str = 'bet365') -> pd.DataFrame:
+    """
+    Fetch odds from file and select book to use
+    """
     print(f"Loading odds from {self.filepath} using {target_book}...")
 
     if not os.path.exists(self.filepath):
