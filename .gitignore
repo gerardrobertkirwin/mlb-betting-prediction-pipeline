@@ -1,5 +1,9 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
+*.pyc
+.ipynb_checkpoints/
+venv/
+.env
 *.py[codz]
 *$py.class
 
@@ -235,6 +239,7 @@ runs/
 
 # Large files
 *.csv
+*.nc
 *.parquet
 *.feather
 *.db
