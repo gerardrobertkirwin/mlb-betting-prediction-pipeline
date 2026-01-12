@@ -73,7 +73,7 @@ class BayesianBettingModel:
         y_obs = pm.Bernoulli("y_obs", p=theta, shape=len(X_scaled))
 
         ppc = pm.sample_posterior_predictive(self.trace, var_names=["y_obs"])
-    
+       
     bayesian_probs = ppc.posterior_predictive['y_obs'].mean(dim=["chain", "draw"]).values
 
 
