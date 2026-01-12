@@ -72,7 +72,7 @@ class BayesianBettingModel:
     
         y_obs = pm.Bernoulli("y_obs", p=theta, shape=len(X_scaled))
 
-        ppc = ppm.sample_posterior_predictive(self.trace, var_names=["y_obs"], extend_inferencedata=True)
+        ppc = pm.sample_posterior_predictive(self.trace, var_names=["y_obs"], extend_inferencedata=True)
             
         # 4. Extract Mean Probability
         # This line must be indented exactly 8 spaces (same as 'with pm.Model' above)
