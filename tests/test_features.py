@@ -33,7 +33,7 @@ def test_rolling_features_shift_logic():
     })
 
     # 2. Run Feature Engineering with window=2
-    df_engineered = features.calculate_rolling_features(df, window=2)
+    df_engineered = features.calculate_rolling_features(df, window_size=2)
 
     # 3. Assertions
     
